@@ -1,0 +1,94 @@
+# Product catalog
+products = {
+    "Product A": 20,
+    "Product B": 40,
+    "Product C": 50
+}
+
+# Discount Rules
+discount_rules = {
+    "flat_10_discount": 10,
+    "bulk_5_discount": 5,
+    "bulk_10_discount": 10,
+    "tiered_50_discount": 50
+}
+
+# Fees
+gift_wrap_fee = 1
+shipping_fee_per_package = 5
+products_per_package = 10
+
+# Function to calculate the total amount for a product
+def calculate_product_total(product_name, quantity, gift_wrap):
+    product_price = products[product_name]
+    product_total = product_price * quantity
+
+    if gift_wrap:
+        product_total += gift_wrap_fee * quantity
+
+    return product_total
+
+# Function to apply the most beneficial discount rule
+def apply_discount_rules(quantity):
+    applied_discount = None
+    discount_amount = 0
+
+    # Check if cart total exceeds $200
+    if quantity > 20:
+        applied_discount = "flat_10_discount"
+        discount_amount = discount_rules["flat_10_discount"]
+
+    # Check if quantity of any single product exceeds 10 units
+    if quantity > 10:
+        applied_discount = "bulk_5_discount"
+        discount_amount = discount_rules["bulk_5_discount"]
+
+    # Check if total quantity exceeds 20 units
+    if quantity > 20:
+        applied_discount = "bulk_10_discount"
+        discount_amount = discount_rules["bulk_10_discount"]
+
+    # Check if total quantity exceeds 30 units and any single product quantity is greater than 15
+    if quantity > 30:
+        applied_discount = "tiered_50_discount"
+        discount_amount = discount_rules["tiered_50_discount"]
+
+    return applied_discount, discount_amount
+
+# Main program
+def main():
+    # Ask for quantity and gift wrap for each product
+    quantities = {}
+    for product in products:
+        quantity = int(input(f"Enter quantity for {product}: "))
+        gift_wrap = input(f"Is {product} wrapped as a gift? (yes/no): ").lower() == "yes"
+        quantities[product] = {"quantity": quantity, "gift_wrap": gift_wrap}
+
+    # Calculate totals for each product and apply discounts
+    subtotal = 0
+    for product, details in quantities.items():
+        product_total = calculate_product_total(product, details["quantity"], details["gift_wrap"])
+        subtotal += product_total
+
+    # Apply the most beneficial discount rule
+    applied_discount, discount_amount = apply_discount_rules(subtotal)
+
+    # Calculate shipping fee
+    shipping_fee = shipping_fee_per_package * (subtotal // products_per_package)
+
+    # Calculate the final total amount
+    total = subtotal - discount_amount + shipping_fee
+
+    # Output the details
+    print("----- Receipt -----")
+    for product, details in quantities.items():
+        product_total = calculate_product_total(product, details["quantity"], details["gift_wrap"])
+        print(f"{product}: Quantity: {details['quantity']}, Total: ${product_total}")
+    print(f"Subtotal: ${subtotal}")
+    print(f"Discount applied: {applied_discount}, Amount: ${discount_amount}")
+    print(f"Shipping fee: ${shipping_fee}")
+    print(f"Total: ${total}")
+
+# Run the program
+if __name__ == "__main__":
+    main()
